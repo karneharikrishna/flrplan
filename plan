@@ -1,0 +1,14 @@
+set_block_pin_constraints -self -allowed_layers {M3 M4} -sides 2
+place_pins -ports [get_ports -filter direction==out]
+set_block_pin_constraints -self -allowed_layers {M3 M4} -sides 4
+place_pins -ports [get_ports -filter direction==in]
+set_attribute [get_ports *] physical_status fixed
+get_attribute [get_ports *] is_fixed
+create_keepout_margin -type hard -outer {1.48 1.2 1.48 1.2} [get_cells -physical_context -filter design_type==macro]
+set_attribute [get_cells -physical_context -filter design_type==macro] physical_status fixed
+get_attribute [get_cells -physical_context -filter design_type==macro] is_fixed
+set_boundary_cell_rules -top_boundary_cells saed14s*vt_ss0p72v125c/SAED*VT14_CAPT2 -bottom_boundary_cells saed14*vt_ss0p72v125c/SAED*VT14_CAPB2 -right_boundary_cell saed14*vt_tt0p6v125c/SAED*VT14_CAPBIN13 -left_boundary_cell saed14*vt_tt0p6v125c/SAED*VT14_CAPBTAP6 -prefix endcap
+compile_targeted_boundary_cells -target_objects [get_voltage_areas]
+create_tap_cells -lib_cell saed14slvt_ss0p72v125c/SAEDSLVT14_CAPTTAPP6 -distance 30 -skip_fixed_cells
+check_legality -cells [get_cells bound*]
+check_legality -cells [get_cells tap*]
